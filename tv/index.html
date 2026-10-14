@@ -1,27 +1,13 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cockpit · test vidéo</title>
-<style>body{font:22px -apple-system,Segoe UI,Roboto,sans-serif;background:#111;color:#eee;margin:24px}h1{font-size:30px}table{border-collapse:collapse;width:100%}td{padding:8px 12px;border-bottom:1px solid #333}.ok{color:#3c3}.ko{color:#e44}.mid{color:#fc3}#st{margin:16px 0;color:#aaa}</style></head>
-<body><h1>Cockpit · ce que ta Tesla sait lire</h1><div id="st">Analyse…</div><table id="t"></table>
+<title>Cockpit TV</title>
+<style>body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0b0b0d;color:#f2f2f4;font:22px -apple-system,Segoe UI,Roboto,sans-serif;gap:22px}
+h1{font-size:42px;margin:0}p{color:#8a8a93;margin:0}#c{font:600 46px ui-monospace,monospace;letter-spacing:14px;min-height:56px}
+.pad{display:grid;grid-template-columns:repeat(3,110px);gap:14px}.pad button{font:600 34px inherit;height:84px;border:0;border-radius:18px;background:#222;color:#fff}
+.pad .ok{background:#e31937}</style></head>
+<body><h1>Cockpit TV</h1><p>Code affiché dans l'app Cockpit (Films › Écran de la voiture)</p><div id="c"></div>
+<div class="pad" id="pad"></div>
 <script>
-const tests=[
- ["H.264 (MP4)",'video/mp4; codecs="avc1.640028"'],
- ["HEVC 8 bits",'video/mp4; codecs="hvc1.1.6.L120.90"'],
- ["HEVC 10 bits (4K HDR)",'video/mp4; codecs="hvc1.2.4.L153.B0"'],
- ["HEVC 10 bits (hev1)",'video/mp4; codecs="hev1.2.4.L153.B0"'],
- ["VP9",'video/webm; codecs="vp9"'],
- ["VP9 10 bits",'video/mp4; codecs="vp09.02.51.10"'],
- ["AV1",'video/mp4; codecs="av01.0.12M.10"'],
- ["Son AAC",'audio/mp4; codecs="mp4a.40.2"'],
- ["Son Dolby AC3",'audio/mp4; codecs="ac-3"'],
- ["Son Dolby E-AC3",'audio/mp4; codecs="ec-3"'],
- ["Son Opus",'audio/webm; codecs="opus"'],
- ["Son FLAC",'audio/mp4; codecs="flac"'],
-];
-const r={ua:navigator.userAgent,ecran:screen.width+"x"+screen.height+" @"+devicePixelRatio,mse:!!window.MediaSource,res:{}};
-const v=document.createElement("video");const t=document.getElementById("t");
-for(const [n,c] of tests){const mse=window.MediaSource?MediaSource.isTypeSupported(c):false;const cp=v.canPlayType(c);r.res[n]={mse,canPlay:cp};
- const cls=mse?"ok":(cp?"mid":"ko");t.insertAdjacentHTML("beforeend","<tr><td>"+n+"</td><td class="+cls+">"+(mse?"OUI":(cp?"peut-être":"non"))+"</td></tr>");}
-r.hls=v.canPlayType("application/vnd.apple.mpegurl");r.mkv=v.canPlayType("video/x-matroska");
-t.insertAdjacentHTML("beforeend","<tr><td>HLS natif</td><td>"+(r.hls||"non")+"</td></tr><tr><td>MKV direct</td><td>"+(r.mkv||"non")+"</td></tr>");
-fetch("https://ntfy.sh/cockpit-tv-6ac63f0ad9bc",{method:"POST",body:JSON.stringify(r)}).then(()=>{document.getElementById("st").textContent="Résultats envoyés à Cockpit. Tu peux fermer cette page.";}).catch(e=>{document.getElementById("st").textContent="Envoi impossible ("+e+") : prends une photo de l'écran.";});
+const SERVER="https://macbook-pro-de-shane.tail2a4ab9.ts.net:8443";let code="";const c=document.getElementById("c"),pad=document.getElementById("pad");
+const keys=["1","2","3","4","5","6","7","8","9","⌫","0","OK"];
+for(const k of keys){const b=document.createElement("button");b.textContent=k;if(k==="OK")b.className="ok";b.onclick=()=>{if(k==="⌫")code=code.slice(0,-1);else if(k==="OK"){if(code.length===6)location.href=SERVER+"/tv?pin="+code;return;}else if(code.length<6)code+=k;c.textContent=code.replace(/./g,"•");if(code.length===6)location.href=SERVER+"/tv?pin="+code;};pad.appendChild(b);}
 </script></body></html>
